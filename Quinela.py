@@ -39,13 +39,12 @@ def generarMatriz():
 matriz = generarMatriz()
 
 def analizarApuesta(a, apuesta,c):
-    print()
-    
-    print("apuesta", apuesta)
     apuestaTotal = 0
     b = str(int(apuesta))
     numerosJugados = len(b)
     multi = 0
+    ganador = False
+    
 
     if numerosJugados == 4:
         multi = 3500
@@ -62,35 +61,36 @@ def analizarApuesta(a, apuesta,c):
         for i in range(10):
             numero = str(matriz[i + 1][1])
             numero = numero[-len(b):]
-            print("n", numero)
+            
             
             if int(numero) == int(b):
-                print(f"INCREIBLE {numero} ES IGUAL A {apuesta}")
+                
+                ganador = True
     
                 if a == 20:
                     apuestaTotal += (int(c) // a) * multi
-                    print("gano $", apuestaTotal)
+                    
 
                 if a == 15:
                     apuestaTotal += (int(c) // a) * multi
-                    print("gano $", apuestaTotal)
+                    
                 
     
         for j in range(a - 10):
             numero = str(matriz[j + 1][3])
             numero = numero[-len(b):]
-            print("n", numero)
+            
             if int(numero) == int(b):
-                print(f"INCREIBLE {numero} ES IGUAL A {apuesta}")
-
+                
+                ganador = True
                 if a == 20:
                     apuestaTotal += (int(c) // a) * multi
-                    print("gano $", apuestaTotal)
+                    
                     
 
                 if a == 15:
                     apuestaTotal += (int(c) // a) * multi
-                    print("gano $", apuestaTotal)
+                    
 
                 
 
@@ -98,22 +98,42 @@ def analizarApuesta(a, apuesta,c):
         for i in range(a):
             numero = str(matriz[i + 1][1])
             numero = numero[-len(b):]
-            print("n", numero)
+            
             if int(numero) == int(b):
-                print(f"INCREIBLE {numero} ES IGUAL A {apuesta}")
+                ganador = True
+                
                 
                 if a == 1:
-                    apuestaTotal += (c // a) * multi
-                    print("gano", apuestaTotal)
+                    apuestaTotal += (int(c) // a) * multi
+                    
                     
                 elif a == 5:
-                    apuestaTotal += (c // a) * multi
-                    print("gano", apuestaTotal)
+                    apuestaTotal += (int(c) // a) * multi
+                    
+    
+    return apuestaTotal,ganador
+
+
+
+
+
+dniGanadores = []
+agenciaGanadores = []
+premioGanadores = []
+apuestaGanadores = []
+numeroGanadores = []
+ubicacionGanadores = []
+totalTodo = 0
+contador = 0
+listado = []
+
 
 try:
-    arch = open("quini.txt", "r", encoding="utf-8")
+    arch = open("apuestasquiniela2.txt", "r", encoding="utf-8")
 except:
     print("algo salio mal")
+
+
 
 for linea in arch:
     partes = linea.split(";")
@@ -122,4 +142,57 @@ for linea in arch:
     apuesta = partes[2]
     ubicacion = int(partes[3])
     dinero = partes[4]
-    analizarApuesta(ubicacion, apuesta,dinero)
+    
+    total,ganador = analizarApuesta(ubicacion, apuesta,dinero)
+    totalTodo += total
+
+    if ganador:
+        contador += 1
+        dniGanadores.append(Dni)
+        agenciaGanadores.append(agencia)
+        premioGanadores.append(total)
+        apuestaGanadores.append(int(dinero))
+        numeroGanadores.append(apuesta)
+        ubicacionGanadores.append(ubicacion)
+
+
+print(f"premios total a pagar: {totalTodo}")
+print(f"premio promedio: {totalTodo // contador}")
+
+
+
+
+
+for f in range(len(premioGanadores) + 1):
+    listado.append([])
+    for c in range(6):
+        listado[f].append(0)
+
+
+listado[0][0] = "DNI"
+listado[0][1] = "Agencia"
+listado[0][2] = "Premio"
+listado[0][3] = "Apuesta $"
+listado[0][4] = "N Apostado"
+listado[0][5] = "Ubicacion"
+
+for i in range(len(premioGanadores)):
+
+    listado[i + 1][0] = dniGanadores[i]
+    listado[i + 1][1] = agenciaGanadores[i]
+    listado[i + 1][2] = premioGanadores[i]
+    listado[i + 1][3]= apuestaGanadores[i]
+    listado[i + 1][4] = numeroGanadores[i]
+    listado[i + 1][5] = ubicacionGanadores[i]
+
+
+
+
+for f in range(len(premioGanadores) + 1):
+    for c in range(6):
+        print("{:<10}".format(listado[f][c]), end=" ")
+    print()
+
+print()
+print(f"premios total a pagar: {totalTodo}")
+print(f"premio promedio: {totalTodo // contador}")
